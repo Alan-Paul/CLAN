@@ -111,26 +111,21 @@ class Market(object):
         return ret, int(len(all_pids))
 
     def load(self):
-        self.source_train, self.num_train_ids = self.preprocess(self.source_images_dir, self.source_train_path,img_extension=self.source_extension)
-        # self.source_train, self.num_train_ids = self.preprocess(self.source_images_dir, self.source_train_path)
-        # self.target_train, _ = self.preprocess(self.target_images_dir, self.target_train_path)
-        self.gallery, self.num_gallery_ids = self.preprocess(self.target_images_dir, self.gallery_path,img_extension=self.target_extension, relabel=False)
-        # self.gallery, self.num_gallery_ids = self.sys_preprocess(self.target_images_dir, self.gallery_path, False)
-        # self.query, self.num_query_ids = self.sys_preprocess(self.target_images_dir, self.query_path, False)
-        self.query, self.num_query_ids = self.preprocess(self.target_images_dir, self.query_path, img_extension=self.target_extension, relabel=False)
+        self.source_train, self.num_source_train_ids = self.preprocess(self.source_images_dir, self.source_train_path,img_extension=self.source_extension)
+        self.target_train, self.num_target_train_ids = self.preprocess(self.target_images_dir, self.target_train_path,img_extension=self.target_extension, relabel=False)
+        # self.query, self.num_query_ids = self.preprocess(self.target_images_dir, self.query_path, img_extension=self.target_extension, relabel=False)
 
         print(self.__class__.__name__, "dataset loaded")
         print("  subset   | # ids | # images")
         print("  ---------------------------")
         print("  source train    | {:5d} | {:8d}"
-              .format(self.num_train_ids, len(self.source_train)))
+              .format(self.num_source_train_ids, len(self.source_train)))
+
+        print("  target train    | {:5d} | {:8d}"
+              .format(self.num_target_train_ids, len(self.target_train)))
         # print("  target train    | 'Unknown' | {:8d}"
         #       .format(len(self.target_train)))
-
-
-        print("  query    | {:5d} | {:8d}"
-              .format(self.num_query_ids, len(self.query)))
-        print("  gallery  | {:5d} | {:8d}"
-              .format(self.num_gallery_ids, len(self.gallery)))
-        print('gallery path : %s' % str(osp.join(self.target_images_dir,self.gallery_path)))
-        print('query path : %s' % str(osp.join(self.target_images_dir,self.query_path)))
+        # print("  gallery  | {:5d} | {:8d}"
+              # .format(self.num_gallery_ids, len(self.gallery)))
+        print('source path : %s' % str(self.source_images_dir))
+        print('target path : %s' % str(self.target_images_dir))

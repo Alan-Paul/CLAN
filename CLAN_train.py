@@ -55,29 +55,29 @@ SOURCE = 'market'
 TARGET = 'duke'
 SET = 'train'
 
-if SOURCE == 'GTA5':
-    INPUT_SIZE_SOURCE = '1280,720'
-    DATA_DIRECTORY = './data/GTA5'
-    DATA_LIST_PATH = './dataset/gta5_list/train.txt'
-    Lambda_weight = 0.01
-    Lambda_adv = 0.001
-    Lambda_local = 40
-    Epsilon = 0.4
-    INPUT_SIZE_TARGET = '1024,512'
-    DATA_DIRECTORY_TARGET = './data/Cityscapes'
-    DATA_LIST_PATH_TARGET = './dataset/cityscapes_list/train.txt'
-elif SOURCE == 'SYNTHIA':
-    INPUT_SIZE_SOURCE = '1280,760'
-    DATA_DIRECTORY = './data/SYNTHIA/RAND_CITYSCAPES'
-    DATA_LIST_PATH = './dataset/synthia_list/train.txt'
-    Lambda_weight = 0.01
-    Lambda_adv = 0.001
-    Lambda_local = 10
-    Epsilon = 0.4
-    INPUT_SIZE_TARGET = '1024,512'
-    DATA_DIRECTORY_TARGET = './data/Cityscapes'
-    DATA_LIST_PATH_TARGET = './dataset/cityscapes_list/train.txt'
-elif SOURCE == 'market':
+# if SOURCE == 'GTA5':
+#     INPUT_SIZE_SOURCE = '1280,720'
+#     DATA_DIRECTORY = './data/GTA5'
+#     DATA_LIST_PATH = './dataset/gta5_list/train.txt'
+#     Lambda_weight = 0.01
+#     Lambda_adv = 0.001
+#     Lambda_local = 40
+#     Epsilon = 0.4
+#     INPUT_SIZE_TARGET = '1024,512'
+#     DATA_DIRECTORY_TARGET = './data/Cityscapes'
+#     DATA_LIST_PATH_TARGET = './dataset/cityscapes_list/train.txt'
+# elif SOURCE == 'SYNTHIA':
+#     INPUT_SIZE_SOURCE = '1280,760'
+#     DATA_DIRECTORY = './data/SYNTHIA/RAND_CITYSCAPES'
+#     DATA_LIST_PATH = './dataset/synthia_list/train.txt'
+#     Lambda_weight = 0.01
+#     Lambda_adv = 0.001
+#     Lambda_local = 10
+#     Epsilon = 0.4
+#     INPUT_SIZE_TARGET = '1024,512'
+#     DATA_DIRECTORY_TARGET = './data/Cityscapes'
+#     DATA_LIST_PATH_TARGET = './dataset/cityscapes_list/train.txt'
+if SOURCE == 'market':
     INPUT_SIZE_SOURCE = '256,128'
     DATA_DIRECTORY = './data/market/train'
     DATA_LIST_PATH = './data/datalist/market_train.txt'
