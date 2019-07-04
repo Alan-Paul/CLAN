@@ -49,8 +49,10 @@ PREHEAT_STEPS = int(NUM_STEPS_STOP/20)
 POWER = 0.9
 RANDOM_SEED = 1234
 
-SOURCE = 'GTA5'
-TARGET = 'cityscapes'
+# SOURCE = 'GTA5'
+# TARGET = 'cityscapes'
+SOURCE = 'market'
+TARGET = 'duke'
 SET = 'train'
 
 if SOURCE == 'GTA5':
@@ -61,6 +63,9 @@ if SOURCE == 'GTA5':
     Lambda_adv = 0.001
     Lambda_local = 40
     Epsilon = 0.4
+    INPUT_SIZE_TARGET = '1024,512'
+    DATA_DIRECTORY_TARGET = './data/Cityscapes'
+    DATA_LIST_PATH_TARGET = './dataset/cityscapes_list/train.txt'
 elif SOURCE == 'SYNTHIA':
     INPUT_SIZE_SOURCE = '1280,760'
     DATA_DIRECTORY = './data/SYNTHIA/RAND_CITYSCAPES'
@@ -69,15 +74,35 @@ elif SOURCE == 'SYNTHIA':
     Lambda_adv = 0.001
     Lambda_local = 10
     Epsilon = 0.4
-    
-INPUT_SIZE_TARGET = '1024,512'
-DATA_DIRECTORY_TARGET = './data/Cityscapes'
-DATA_LIST_PATH_TARGET = './dataset/cityscapes_list/train.txt'
+    INPUT_SIZE_TARGET = '1024,512'
+    DATA_DIRECTORY_TARGET = './data/Cityscapes'
+    DATA_LIST_PATH_TARGET = './dataset/cityscapes_list/train.txt'
+elif SOURCE == 'market':
+    INPUT_SIZE_SOURCE = '256,128'
+    DATA_DIRECTORY = './data/market/train'
+    DATA_LIST_PATH = './data/datalist/market_train.txt'
+    Lambda_weight = 0.01
+    Lambda_adv = 0.001
+    Lambda_local = 10
+    Epsilon = 0.4
+    INPUT_SIZE_TARGET = '256,128'
+    DATA_DIRECTORY_TARGET = './data/duke'
+    DATA_LIST_PATH_TARGET = './data/datalist/duke_train.txt'
+elif SOURCE == 'duke':
+    INPUT_SIZE_SOURCE = '256,128'
+    DATA_DIRECTORY = './data/duke/train'
+    DATA_LIST_PATH = './data/datalist/duke_train.txt'
+    Lambda_weight = 0.01
+    Lambda_adv = 0.001
+    Lambda_local = 10
+    Epsilon = 0.4
+    INPUT_SIZE_TARGET = '256,128'
+    DATA_DIRECTORY_TARGET = './data/market'
+    DATA_LIST_PATH_TARGET = './data/datalist/market_train.txt'
 
 
 def get_arguments():
     """Parse all the arguments provided from the CLI.
-
     Returns:
       A list of parsed arguments.
     """
@@ -85,7 +110,7 @@ def get_arguments():
     parser.add_argument("--model", type=str, default=MODEL,
                         help="available options : ResNet")
     parser.add_argument("--source", type=str, default=SOURCE,
-                        help="available options : GTA5, SYNTHIA")
+                        help="available options : GTA5, SYNTHIA,market,duke")
     parser.add_argument("--target", type=str, default=TARGET,
                         help="available options : cityscapes")
     parser.add_argument("--batch-size", type=int, default=BATCH_SIZE,
@@ -196,9 +221,14 @@ def weightmap(pred1, pred2):
     (torch.norm(pred1, 2, 1) * torch.norm(pred2, 2, 1)).view(1, 1, pred1.size(2), pred1.size(3))
     return output
 
+def fixRandomSeed(seed=1):
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
 
 def main():
     """Create the model and start the training."""
+    fixRandomSeed()
 
     h, w = map(int, args.input_size_source.split(','))
     input_size_source = (h, w)
