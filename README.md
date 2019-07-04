@@ -1,9 +1,6 @@
 # Taking A Closer Look at Domain Shift: Category-level Adversaries for Semantics Consistent Domain Adaptation (CVPR2019)
 This is a [pytorch](http://pytorch.org/) implementation of [CLAN](http://openaccess.thecvf.com/content_CVPR_2019/papers/Luo_Taking_a_Closer_Look_at_Domain_Shift_Category-Level_Adversaries_for_CVPR_2019_paper.pdf).
 
-### Oral Presentation Video
-[![Watch the video](https://github.com/RoyalVane/CLAN/blob/master/gifs/video.png)](https://www.bilibili.com/video/av53561336/)
-
 ### Prerequisites
 - Python 3.6
 - GPU Memory >= 11G
@@ -57,18 +54,6 @@ python CLAN_iou.py ./data/Cityscapes/gtFine/val result/GTA2Cityscapes_100000
 CUDA_VISIBLE_DEVICES=0 python python CLAN_evaluate_bulk.py
 python CLAN_iou_bulk.py
 ```
-
-### Visualization Results
-<p align="left">
-	<img src="https://github.com/RoyalVane/CLAN/blob/master/gifs/video_1.gif"  width="420" height="210" alt="(a)"/>
-
-  <img src="https://github.com/RoyalVane/CLAN/blob/master/gifs/video_2.gif"  width="420" height="210" alt="(b)"/>
-</p>
-<p align="left">
-	<img src="https://github.com/RoyalVane/CLAN/blob/master/gifs/video_3.gif"  width="420" height="210" alt="(c)"/>
-  
-  <img src="https://github.com/RoyalVane/CLAN/blob/master/gifs/video_4.gif"  width="420" height="210" alt="(d)"/>
-</p>
 
 #### This code is heavily borrowed from the baseline [AdaptSegNet]( https://github.com/wasidennis/AdaptSegNet )
 
