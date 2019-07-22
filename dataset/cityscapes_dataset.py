@@ -5,6 +5,7 @@ import torchvision
 from torch.utils import data
 from PIL import Image
 import random
+from .gta5_dataset import GTA5DataSet
 
 
 class cityscapesDataSet(data.Dataset):

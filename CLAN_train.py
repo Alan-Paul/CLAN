@@ -228,7 +228,7 @@ def fixRandomSeed(seed=1):
 
 def main():
     """Create the model and start the training."""
-    fixRandomSeed()
+    # fixRandomSeed()
 
     h, w = map(int, args.input_size_source.split(','))
     input_size_source = (h, w)
@@ -239,12 +239,12 @@ def main():
     cudnn.enabled = True
     
     # Create Network
-    model = Res_Deeplab(num_classes=args.num_classes)
+    model_G = Res_Deeplab(num_classes=args.num_classes)
     if args.restore_from[:4] == 'http' :
         saved_state_dict = model_zoo.load_url(args.restore_from)
     else:
         saved_state_dict = torch.load(args.restore_from)
-    new_params = model.state_dict().copy()
+    new_params = model_G.state_dict().copy()
 
     ## adapte new_params's layers / classes to saved_state_dict
     for i in saved_state_dict:
@@ -253,11 +253,11 @@ def main():
             new_params['.'.join(i_parts[1:])] = saved_state_dict[i]
 
     if args.restore_from[:4] == './mo':        
-        model.load_state_dict(new_params)
+        model_G.load_state_dict(new_params)
     else:
-        model.load_state_dict(saved_state_dict)
-    model.train()
-    model.cuda(args.gpu)
+        model_G.load_state_dict(saved_state_dict)
+    model_G.train()
+    model_G.cuda(args.gpu)
 
     cudnn.benchmark = True
 
@@ -274,7 +274,7 @@ def main():
 
     if not os.path.exists(args.snapshot_dir):
         os.makedirs(args.snapshot_dir)
-    
+
     if args.source == 'GTA5':
         trainloader = data.DataLoader(
             GTA5DataSet(args.data_dir, args.data_list, max_iters=args.num_steps * args.iter_size * args.batch_size,
@@ -301,11 +301,13 @@ def main():
 
     targetloader_iter = enumerate(targetloader)
 
-    optimizer = optim.SGD(model.optim_parameters(args),
-                          lr=args.learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+    optimizer = optim.SGD(model_G.optim_parameters(args),
+                          lr=args.learning_rate, momentum=args.momentum,
+                          weight_decay=args.weight_decay)
     optimizer.zero_grad()
 
-    optimizer_D = optim.Adam(model_D.parameters(), lr=args.learning_rate_D, betas=(0.9, 0.99))
+    optimizer_D = optim.Adam(model_D.parameters(), lr=args.learning_rate_D,
+                             betas=(0.9, 0.99))
     optimizer_D.zero_grad()
 
     bce_loss = torch.nn.BCEWithLogitsLoss()
@@ -340,7 +342,7 @@ def main():
         _, batch = next(trainloader_iter)
         images_s, labels_s, _, _, _ = batch
         images_s = Variable(images_s).cuda(args.gpu)
-        pred_source1, pred_source2 = model(images_s)
+        pred_source1, pred_source2 = model_G(images_s)
         pred_source1 = interp_source(pred_source1)
         pred_source2 = interp_source(pred_source2)
 		
@@ -353,7 +355,7 @@ def main():
         images_t, _, _, _ = batch
         images_t = Variable(images_t).cuda(args.gpu)
         
-        pred_target1, pred_target2 = model(images_t)
+        pred_target1, pred_target2 = model_G(images_t)
         pred_target1 = interp_target(pred_target1)
         pred_target2 = interp_target(pred_target2)
 
@@ -378,7 +380,7 @@ def main():
         W6 = None
         if args.model == 'ResNet':
 
-            for (w5, w6) in zip(model.layer5.parameters(), model.layer6.parameters()):
+            for (w5, w6) in zip(model_G.layer5.parameters(), model_G.layer6.parameters()):
                 if W5 is None and W6 is None:
                     W5 = w5.view(-1)
                     W6 = w6.view(-1)
@@ -442,13 +444,13 @@ def main():
         
         if i_iter >= args.num_steps_stop - 1:
             print('save model ...')
-            torch.save(model.state_dict(), osp.join(args.snapshot_dir, 'GTA5_' + str(args.num_steps) + '.pth'))
+            torch.save(model_G.state_dict(), osp.join(args.snapshot_dir, 'GTA5_' + str(args.num_steps) + '.pth'))
             torch.save(model_D.state_dict(), osp.join(args.snapshot_dir, 'GTA5_' + str(args.num_steps) + '_D.pth'))
             break
 
         if i_iter % args.save_pred_every == 0 and i_iter != 0:
             print('taking snapshot ...')
-            torch.save(model.state_dict(), osp.join(args.snapshot_dir, 'GTA5_' + str(i_iter) + '.pth'))
+            torch.save(model_G.state_dict(), osp.join(args.snapshot_dir, 'GTA5_' + str(i_iter) + '.pth'))
             torch.save(model_D.state_dict(), osp.join(args.snapshot_dir, 'GTA5_' + str(i_iter) + '_D.pth'))
 
 if __name__ == '__main__':
