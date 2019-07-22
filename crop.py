@@ -3,6 +3,7 @@ import cv2
 import argparse
 import os
 import json
+
 def crop(ori_img,nb_img):
     y,x = np.where((nb_img[:,:,0] * nb_img[:,:,1] * nb_img[:,:,2]) != 0)
     y_min = np.min(y)
@@ -15,17 +16,21 @@ def crop(ori_img,nb_img):
     cp = ori_img[y_min:y_max,x_min:x_max,:]
     cp_nb = nb_img[y_min:y_max,x_min:x_max,:]
     return cp,cp_nb,bbox
+
 def main(args):
     ori_img_root = args.ori_img_root
     nb_img_root = args.nb_img_root
+    camid = args.camid
+    bbox_dir = args.bbox_dir
     ori_ds = os.listdir(ori_img_root)
     nb_ds = os.listdir(nb_img_root)
+    count = 0
     for ori_d in ori_ds:
         ori_img_dir = os.path.join(ori_img_root,ori_d)
-        nb_img_dir = os.path.join(nb_img_root,ori_d)
+        nb_img_dir = os.path.join(nb_img_root,ori_d + '_r')
         id = ori_d
-        bbf_name = id + '_bbox.txt'
-        bbf = os.path.join(ori_img_dir,bbf_name)
+        bbf_name = id + '_' + camid + '_bbox.txt'
+        bbf = os.path.join(bbox_dir,bbf_name)
         if not os.path.exists(bbf):
             os.mknod(bbf)
         ori_imgs = os.listdir(ori_img_dir)
@@ -41,17 +46,19 @@ def main(args):
             cv2.imwrite(cur_nb_path,cp_nb)
             with open(bbf,'a') as f:
                 f.write(ori_img)
+                f.write(' ')
                 f.write(' '.join(bbx))
                 f.write('\n')
-
-
-
-
+            count += 1
+            if count % 30 == 0:
+                print('processed {} images'.format(count))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--ori_img_root',type=str,default='/ssd4/ltb/datasets/PersonX/test/ori')
     parser.add_argument('--nb_img_root',type=str,default='/ssd4/ltb/datasets/PersonX/test/nb')
+    parser.add_argument('--camid', type=str, default='1')
+    parser.add_argument('--bbox_dir', type=str, default='/ssd4/ltb/datasets/PersonX/bbox/test/')
     args = parser.parse_args()
     main(args)
